@@ -9,15 +9,68 @@ nav {
   text-align: center;
   z-index: 2;
   top: 0;
+  user-select: none;
 }
 
-h2 {
-  text-align: center;
+/*******************
+ *
+ * Create card form
+ *
+*******************/
+
+details {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 10;
+  background-color: var(--bg-color);
+  width: 200px;
 }
+
+summary {
+  display: block;
+  padding: 16px;
+  border: 1px solid var(--fg-color);
+  user-select: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--fg-color);
+  margin-top: -1px;
+  padding: 1rem;
+}
+
+input + label {
+  margin-top: 16px;
+}
+
+label + input {
+  margin-top: 4px;
+}
+
+button[type="submit"] {
+  appearance: none;
+  margin-top: 16px;
+  border: none;
+  background-color: var(--fg-color);
+  color: var(--bg-color);
+  padding: 8px;
+  cursor: pointer;
+}
+
+/*******************
+ *
+ * Canvas Wrapper
+ *
+*******************/
 
 #canvas-wrapper {
-  width: 2000px;
-  height: 2000px;
+  width: 3000px;
+  height: 1000px;
   overflow: scroll;
   position: relative;
 }
@@ -35,22 +88,26 @@ canvas {
   height: 100%;
 }
 
+/*******************
+ *
+ * Cool wall Sections
+ *
+*******************/
+
+h2 {
+  text-align: center;
+}
+
 #grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
-  height: 2000px;
+  height: 1000px;
   gap: 4px;
 }
 
 #grid div {
-  background-color: #fff;
+  background-color: var(--bg-color);
   padding-top: 48px;
-}
-
-@media (prefers-color-scheme: dark) {
-  #grid div {
-    background-color: #000;
-  }
 }
 
 #col-one {
