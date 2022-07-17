@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { createElement, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Layer, Stage, Text, Label, Group, Image, Tag } from "react-konva";
 import useImage from "use-image";
@@ -24,19 +24,23 @@ function App() {
   ]);
 
   const calculateIdealSize = (url) => {
-    let image = new Image();
+
+    let image = new window.Image();
+
     image.src = url;
+
+    console.log(image);
 
     let imgWidth = 0;
     let imgHeight = 0;
 
-    if (image.width > 200) {
-      const scalingFactor = image.width / 200;
+    if (image.naturalWidth > 200) {
+      const scalingFactor = image.naturalWidth / 200;
       imgWidth = 200;
-      imgHeight = image.height / scalingFactor;
+      imgHeight = image.naturalHeight / scalingFactor;
     } else {
-      imgWidth = image.width;
-      imgHeight = image.height;
+      imgWidth = image.naturalWidth;
+      imgHeight = image.naturalHeight;
     }
 
     //garbage collect
@@ -72,7 +76,7 @@ function App() {
               url: data.url,
               width: idealSize.width,
               height: idealSize.height,
-              text: data.text,
+              text: data.title,
             };
 
             console.log(newCard);

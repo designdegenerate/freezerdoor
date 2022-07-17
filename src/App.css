@@ -20,7 +20,7 @@ nav {
 
 details {
   position: fixed;
-  top: 24px;
+  top: 16px;
   right: 24px;
   z-index: 10;
   background-color: var(--bg-color);
@@ -50,6 +50,13 @@ input + label {
 
 label + input {
   margin-top: 4px;
+}
+
+input[type="text"],
+input[type="url"] {
+  border: 1px solid var(--fg-color);
+  padding: 4px;
+
 }
 
 button[type="submit"] {
