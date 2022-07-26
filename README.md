@@ -1,4 +1,19 @@
-# Getting Started with Create React App
+# Freezerdoor
+
+Freezerdoor is a digital clone of the defunct [Top Gear™ Cool Wall](https://www.youtube.com/watch?v=niCQ8pf1W4M) where they ranked cars based on coolness and placed them in either a: Seriously Uncool, Uncool, Cool, or Subzero category.
+
+It's a large WIP and doesn't completely function yet.
+
+Images are stored as URLs to save on server costs.
+
+## TODO
+- Better styling
+- Permanently store cards
+- Track coordinates and dynamically update
+- Delete cards
+- Socket integration to allow for bidirectional ~~bickering with your mates~~ control.
+- Server and db to store data
+
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 

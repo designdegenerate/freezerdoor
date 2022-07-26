@@ -1,4 +1,4 @@
-import { createElement, useState } from "react";
+import { useReducer, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Layer, Stage, Text, Label, Group, Image, Tag } from "react-konva";
 import useImage from "use-image";
@@ -23,13 +23,50 @@ function App() {
     },
   ]);
 
+  const initialState = {
+    content: [
+      {
+        id: 1,
+        url: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Febo_kalfsvleeskroket.jpg/800px-Febo_kalfsvleeskroket.jpg",
+        width: 200,
+        height: 100,
+        text: "Nextbit Robin",
+      },
+      {
+        id: 2,
+        url: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Febo_kalfsvleeskroket.jpg/800px-Febo_kalfsvleeskroket.jpg",
+        width: 200,
+        height: 100,
+        text: "Nextbit Robin",
+      },
+    ],
+  };
+
+  function reducer(state, action) {
+    switch (action.type) {
+      case "insert":
+        return { content: state.count + 1 };
+      case "delete":
+        return { count: state.count - 1 };
+      default:
+        throw new Error();
+    }
+  }
+
+  function Counter() {
+    const [state, dispatch] = useReducer(reducer, initialState);
+    return (
+      <>
+        Count: {state.count}
+        <button onClick={() => dispatch({ type: "decrement" })}>-</button>
+        <button onClick={() => dispatch({ type: "increment" })}>+</button>
+      </>
+    );
+  }
+
   const calculateIdealSize = (url) => {
-
     let image = new window.Image();
-
     image.src = url;
-
-    console.log(image);
 
     let imgWidth = 0;
     let imgHeight = 0;
@@ -43,7 +80,6 @@ function App() {
       imgHeight = image.naturalHeight;
     }
 
-    //garbage collect
     image = null;
 
     return {
@@ -67,8 +103,6 @@ function App() {
         <summary>+ Create New Entry</summary>
         <form
           onSubmit={handleSubmit((data) => {
-            console.log(data);
-
             const idealSize = calculateIdealSize(data.url);
 
             const newCard = {
@@ -78,8 +112,6 @@ function App() {
               height: idealSize.height,
               text: data.title,
             };
-
-            console.log(newCard);
 
             setCards([...getCards, newCard]);
           })}
@@ -96,7 +128,12 @@ function App() {
           <Layer>
             {getCards.map((card) => {
               return (
-                <Group key={card.id} draggable={true}>
+                <Group
+                  key={card.id}
+                  draggable={true}
+                  listening={true}
+                  onDragEnd={(event) => {}}
+                >
                   <ImgCard
                     url={card.url}
                     width={card.width}
