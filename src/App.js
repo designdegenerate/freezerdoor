@@ -5,7 +5,7 @@ import "./App.css";
 import { calculateIdealSize, ImgCard } from "./helpers";
 
 function App() {
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit, reset } = useForm();
 
   const initialState = {
     content: [
@@ -81,6 +81,8 @@ function App() {
       type: "insert",
       payload: newCard,
     });
+
+    reset();
   };
 
   return (
