@@ -1,27 +1,11 @@
-import { useReducer, useState } from "react";
+import { createRef, useReducer } from "react";
 import { useForm } from "react-hook-form";
-import { Layer, Stage, Text, Label, Group, Image, Tag } from "react-konva";
-import useImage from "use-image";
+import { Layer, Stage, Text, Label, Group, Tag } from "react-konva";
 import "./App.css";
+import { calculateIdealSize, ImgCard } from "./helpers";
 
 function App() {
   const { register, handleSubmit } = useForm();
-  const [getCards, setCards] = useState([
-    {
-      id: 1,
-      url: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Febo_kalfsvleeskroket.jpg/800px-Febo_kalfsvleeskroket.jpg",
-      width: 200,
-      height: 100,
-      text: "Nextbit Robin",
-    },
-    {
-      id: 2,
-      url: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Febo_kalfsvleeskroket.jpg/800px-Febo_kalfsvleeskroket.jpg",
-      width: 200,
-      height: 100,
-      text: "Nextbit Robin",
-    },
-  ]);
 
   const initialState = {
     content: [
@@ -30,68 +14,59 @@ function App() {
         url: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Febo_kalfsvleeskroket.jpg/800px-Febo_kalfsvleeskroket.jpg",
         width: 200,
         height: 100,
-        text: "Nextbit Robin",
+        x: 200,
+        y: 400,
+        text: "Nextbt",
       },
       {
-        id: 2,
+        id: 23333,
         url: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Febo_kalfsvleeskroket.jpg/800px-Febo_kalfsvleeskroket.jpg",
         width: 200,
         height: 100,
+        x: 500,
+        y: 400,
         text: "Nextbit Robin",
       },
     ],
   };
 
-  function reducer(state, action) {
+  const reducer = (state, action) => {
     switch (action.type) {
       case "insert":
-        return { content: state.count + 1 };
+        return { content: [...state.content, action.payload] };
+      case "move":
+        const i = state.content.findIndex((card) => {
+          return card.id === action.payload.id;
+        });
+        const newState = [...state.content];
+        newState[i] = action.payload;
+        return { content: [...newState] };
       case "delete":
         return { count: state.count - 1 };
       default:
         throw new Error();
     }
-  }
-
-  function Counter() {
-    const [state, dispatch] = useReducer(reducer, initialState);
-    return (
-      <>
-        Count: {state.count}
-        <button onClick={() => dispatch({ type: "decrement" })}>-</button>
-        <button onClick={() => dispatch({ type: "increment" })}>+</button>
-      </>
-    );
-  }
-
-  const calculateIdealSize = (url) => {
-    let image = new window.Image();
-    image.src = url;
-
-    let imgWidth = 0;
-    let imgHeight = 0;
-
-    if (image.naturalWidth > 200) {
-      const scalingFactor = image.naturalWidth / 200;
-      imgWidth = 200;
-      imgHeight = image.naturalHeight / scalingFactor;
-    } else {
-      imgWidth = image.naturalWidth;
-      imgHeight = image.naturalHeight;
-    }
-
-    image = null;
-
-    return {
-      width: imgWidth,
-      height: imgHeight,
-    };
   };
 
-  const ImgCard = ({ url, width, height }) => {
-    const [image] = useImage(url);
+  const [state, dispatch] = useReducer(reducer, initialState);
 
-    return <Image width={width} height={height} image={image} />;
+  const onSubmit = (data) => {
+    const idealSize = calculateIdealSize(data.url);
+
+    const newCard = {
+      id: state.content.length + 1,
+      url: data.url,
+      width: idealSize.width,
+      height: idealSize.height,
+      x: 100,
+      y: 100,
+      text: data.title,
+    };
+
+    dispatch({
+      type: "insert",
+      payload: newCard,
+    });
   };
 
   return (
@@ -101,21 +76,7 @@ function App() {
       </nav>
       <details>
         <summary>+ Create New Entry</summary>
-        <form
-          onSubmit={handleSubmit((data) => {
-            const idealSize = calculateIdealSize(data.url);
-
-            const newCard = {
-              id: getCards.length + 1,
-              url: data.url,
-              width: idealSize.width,
-              height: idealSize.height,
-              text: data.title,
-            };
-
-            setCards([...getCards, newCard]);
-          })}
-        >
+        <form onSubmit={handleSubmit(onSubmit)}>
           <label htmlFor="title">Title</label>
           <input {...register("title")} id="title" type="text"></input>
           <label htmlFor="url">Image URL</label>
@@ -126,20 +87,36 @@ function App() {
       <div id="canvas-wrapper">
         <Stage width={3000} height={1000}>
           <Layer>
-            {getCards.map((card) => {
+            {state.content.map((card) => {
+              const labelRef = createRef(null);
               return (
                 <Group
                   key={card.id}
+                  x={card.x}
+                  y={card.y}
                   draggable={true}
                   listening={true}
-                  onDragEnd={(event) => {}}
+                  onDragEnd={(event) => {
+                    dispatch({
+                      type: "move",
+                      payload: "a",
+                    });
+                  }}
+                  onMouseEnter={() => {
+                    const label = labelRef.current;
+                    label.setAttrs({ visible: true });
+                  }}
+                  onMouseLeave={() => {
+                    const label = labelRef.current;
+                    label.setAttrs({ visible: false });
+                  }}
                 >
                   <ImgCard
                     url={card.url}
                     width={card.width}
                     height={card.height}
                   />
-                  <Label offsetY={20}>
+                  <Label ref={labelRef} offsetY={20} visible={false}>
                     <Tag fill={"white"} />
                     <Text
                       fontStyle={"bold"}
