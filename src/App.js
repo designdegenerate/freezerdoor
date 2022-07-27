@@ -40,7 +40,7 @@ function App() {
         });
         const newState = [...state.content];
         newState[i] = action.payload;
-        return { content: [...newState] };
+        return {content: [...newState]}
       case "delete":
         return { count: state.count - 1 };
       default:
@@ -96,10 +96,14 @@ function App() {
                   y={card.y}
                   draggable={true}
                   listening={true}
-                  onDragEnd={(event) => {
+                  onDragEnd={(e) => {
                     dispatch({
                       type: "move",
-                      payload: "a",
+                      payload: {
+                        ...card,
+                        x: e.target.x(),
+                        y: e.target.y()
+                      },
                     });
                   }}
                   onMouseEnter={() => {
