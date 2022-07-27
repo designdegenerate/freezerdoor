@@ -2,6 +2,8 @@
 
 # dependencies
 /node_modules
+/freezerdoor/node_modules
+/freezerdoor-server/node_modules
 /.pnp
 .pnp.js
 
