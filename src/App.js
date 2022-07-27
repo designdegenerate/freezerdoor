@@ -1,6 +1,6 @@
 import { createRef, useReducer } from "react";
 import { useForm } from "react-hook-form";
-import { Layer, Stage, Text, Label, Group, Tag } from "react-konva";
+import { Layer, Stage, Text, Label, Group, Tag, Rect } from "react-konva";
 import "./App.css";
 import { calculateIdealSize, ImgCard } from "./helpers";
 
@@ -31,18 +31,32 @@ function App() {
   };
 
   const reducer = (state, action) => {
+    const moveCard = () => {
+      const i = state.content.findIndex((card) => {
+        return card.id === action.payload.id;
+      });
+      const newState = [...state.content];
+      newState[i] = action.payload;
+      console.log(action.payload);
+      return newState;
+    };
+
+    const deleteCard = () => {
+      let i = state.content.findIndex((card) => {
+        return card.id === action.payload;
+      });
+      const newState = [...state.content];
+      newState.splice(i);
+      return newState;
+    };
+
     switch (action.type) {
       case "insert":
         return { content: [...state.content, action.payload] };
       case "move":
-        const i = state.content.findIndex((card) => {
-          return card.id === action.payload.id;
-        });
-        const newState = [...state.content];
-        newState[i] = action.payload;
-        return {content: [...newState]}
+        return { content: moveCard() };
       case "delete":
-        return { count: state.count - 1 };
+        return { content: deleteCard() };
       default:
         throw new Error();
     }
@@ -89,6 +103,8 @@ function App() {
           <Layer>
             {state.content.map((card) => {
               const labelRef = createRef(null);
+              const overlayRef = createRef(null);
+
               return (
                 <Group
                   key={card.id}
@@ -102,17 +118,21 @@ function App() {
                       payload: {
                         ...card,
                         x: e.target.x(),
-                        y: e.target.y()
+                        y: e.target.y(),
                       },
                     });
                   }}
                   onMouseEnter={() => {
                     const label = labelRef.current;
+                    const overlay = overlayRef.current;
                     label.setAttrs({ visible: true });
+                    overlay.setAttrs({ visible: true });
                   }}
                   onMouseLeave={() => {
                     const label = labelRef.current;
+                    const overlay = overlayRef.current;
                     label.setAttrs({ visible: false });
+                    overlay.setAttrs({ visible: false });
                   }}
                 >
                   <ImgCard
@@ -120,13 +140,42 @@ function App() {
                     width={card.width}
                     height={card.height}
                   />
-                  <Label ref={labelRef} offsetY={20} visible={false}>
+                  <Group visible={false} ref={overlayRef}>
+                    <Rect
+                      width={card.width}
+                      height={card.height}
+                      opacity={0.5}
+                      fill={"#000"}
+                    />
+                    <Text
+                      fontStyle={"bold"}
+                      fontSize={24}
+                      fill={"white"}
+                      text={"×"}
+                      padding={2}
+                      offsetX={-4}
+                      offsetY={-2}
+                      onClick={() =>
+                        dispatch({
+                          type: "delete",
+                          payload: card.id,
+                        })
+                      }
+                    />
+                  </Group>
+                  <Label
+                    ref={labelRef}
+                    offsetY={24}
+                    visible={false}
+                    padding={8}
+                  >
                     <Tag fill={"white"} />
                     <Text
                       fontStyle={"bold"}
-                      padding={4}
+                      fontSize={16}
                       fill={"#222"}
                       text={card.text}
+                      padding={4}
                     />
                   </Label>
                 </Group>
