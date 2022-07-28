@@ -2,7 +2,7 @@
 
 Freezerdoor is a digital clone of the defunct [Top Gear™ Cool Wall](https://www.youtube.com/watch?v=niCQ8pf1W4M) where they ranked cars based on coolness and placed them in one of four categories: Seriously Uncool, Uncool, Cool, or Subzero.
 
-Built using React, react-hook-forms (probably overkill,) and node.
+Built using React, react-konva, react-hook-forms (probably overkill,) PostgreSQL, and node.
 
 Images are stored as URLs to save on server costs.
 
