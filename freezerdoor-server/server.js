@@ -25,3 +25,18 @@ app.get("/", async(req, res) => {
 app.get("/cards", async(req, res) => {
   res.send("")
 })
+
+/*
+  Endpoints to make
+  TODO:
+  - set up seeds, seed them
+  - implement GET and send it.
+  - Hook up front-end to get data from server
+  - create post endpoint
+  - hook it up
+  - create del endpoint
+  - hook it up
+
+  - figure out sockets
+
+*/
