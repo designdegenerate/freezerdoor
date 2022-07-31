@@ -4,54 +4,16 @@ import { useForm } from "react-hook-form";
 import { Layer, Stage, Text, Label, Group, Tag, Rect } from "react-konva";
 import "./App.css";
 import { calculateIdealSize, ImgCard } from "./helpers";
+import { reducer } from "./reducer";
 
 function App() {
   const { register, handleSubmit, reset } = useForm();
-
-  const initialState = {
-    content: [],
-  };
-
-  const reducer = (state, action) => {
-    const moveCard = () => {
-      const i = state.content.findIndex((card) => {
-        return card.id === action.payload.id;
-      });
-      const newState = [...state.content];
-      newState[i] = action.payload;
-      console.log(action.payload);
-      return newState;
-    };
-
-    const deleteCard = () => {
-      let i = state.content.findIndex((card) => {
-        return card.id === action.payload;
-      });
-      const newState = [...state.content];
-      newState.splice(i);
-      return newState;
-    };
-
-    switch (action.type) {
-      case "insertAll":
-        return { content: action.payload };
-      case "insert":
-        return { content: [...state.content, action.payload] };
-      case "move":
-        return { content: moveCard() };
-      case "delete":
-        return { content: deleteCard() };
-      default:
-        throw new Error();
-    }
-  };
-
+  const initialState = { content: [] };
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
     (async () => {
       const content = await axios.get("http://localhost:4000/cards");
-
       dispatch({
         type: "insertAll",
         payload: content.data,
@@ -67,7 +29,6 @@ function App() {
       .then((results) => (idealSize = results))
       .then(() => {
         const newCard = {
-          id: state.content.length + 1,
           url: data.url,
           width: idealSize.width,
           height: idealSize.height,
@@ -77,10 +38,16 @@ function App() {
           title: data.title,
         };
 
-        dispatch({
-          type: "insert",
-          payload: newCard,
-        });
+        (async () => {
+
+          const newCardWithId = await axios.post("http://localhost:4000/cards", newCard);
+
+          dispatch({
+            type: "insert",
+            payload: newCardWithId.data,
+          });
+
+        })();
 
         reset();
       });
