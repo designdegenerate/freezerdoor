@@ -37,15 +37,12 @@ app.post("/cards", async (req, res) => {
 
 app.patch("/cards/:id", async (req, res) => {
   try {
-    console.log(req.body.x);
     if (!req.body.x || !req.body.y) {
       return res
         .status(400)
         .send("No coordinates were included in the request");
     }
-
     const card = await Card.findByPk(req.params.id);
-
     await card.update({ x: req.body.x, y: req.body.y });
     res.send("");
   } catch (error) {
@@ -53,6 +50,17 @@ app.patch("/cards/:id", async (req, res) => {
     res.status(500).send("Something bad happened");
   }
 });
+
+app.delete("/cards/:id", async(req, res) => {
+  try {
+    const card = await Card.findByPk(req.params.id);
+    await card.destroy();
+    res.send("");
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Something bad happened");
+  }
+})
 
 /*
   Endpoints to make

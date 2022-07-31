@@ -90,10 +90,10 @@ function App() {
                         const data = {
                           x: e.target.x(),
                           y: e.target.y(),
-                        }
+                        };
                         await axios.patch(
-                          `http://localhost:4000/cards/${card.id}`, data
-                          
+                          `http://localhost:4000/cards/${card.id}`,
+                          data
                         );
                         dispatch({
                           type: "move",
@@ -141,12 +141,15 @@ function App() {
                         padding={2}
                         offsetX={-4}
                         offsetY={-2}
-                        onClick={() =>
-                          dispatch({
-                            type: "delete",
-                            payload: card.id,
-                          })
-                        }
+                        onClick={() => {
+                          (async() => {
+                            await axios.delete(`http://localhost:4000/cards/${card.id}`);
+                            dispatch({
+                              type: "delete",
+                              payload: card.id,
+                            });
+                          })();
+                        }}
                       />
                     </Group>
                     <Label
