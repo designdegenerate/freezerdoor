@@ -29,7 +29,6 @@ app.get("/cards", async(req, res) => {
 /*
   Endpoints to make
   TODO:
-  - set up seeds, seed them
   - implement GET and send it.
   - Hook up front-end to get data from server
   - create post endpoint
