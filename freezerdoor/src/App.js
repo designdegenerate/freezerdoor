@@ -148,6 +148,13 @@ function App() {
                     overlay.setAttrs({ visible: false });
                   }}
                 >
+                  <Rect
+                    width={card.width}
+                    height={card.height}
+                    fill={"white"}
+                    stroke={"white"}
+                    strokeWidth={8}
+                    />
                   <ImgCard
                     url={card.url}
                     width={card.width}

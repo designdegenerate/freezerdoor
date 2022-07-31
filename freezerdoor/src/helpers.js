@@ -19,7 +19,7 @@ const calculateIdealSize = async (url) => {
     .then((img) => {
       const width = img.target.naturalWidth;
       const height = img.target.naturalHeight;
-      const rotation = width > height ? "land" : "port";
+      const rotation = width >= height ? "land" : "port";
       let longSide;
       let shortSide;
 

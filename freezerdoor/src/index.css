@@ -12,8 +12,8 @@ html {
 
 @media (prefers-color-scheme: dark) {
   html {
-    --fg-color: #222;
-    --bg-color: #fff;
+    --fg-color: #fff;
+    --bg-color: #222;
   }
 }
 

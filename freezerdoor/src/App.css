@@ -55,6 +55,7 @@ label + input {
 input[type="text"],
 input[type="url"] {
   border: 1px solid var(--fg-color);
+  background-color: var(--bg-color);
   padding: 4px;
 
 }
