@@ -1,15 +1,12 @@
 require('dotenv').config()
 const express = require("express");
 const corsMiddleWare = require("cors");
+const Card = require("./models").card;
 
 const app = express();
 const PORT = 4000;
 
-app.use(corsMiddleWare({
-  preflightContinue: true,
-  origin: process.env.frontEndServer,
-  credentials: true,
-}));
+app.use(corsMiddleWare());
 
 const bodyParserMiddleWare = express.json();
 app.use(bodyParserMiddleWare);
@@ -23,7 +20,13 @@ app.get("/", async(req, res) => {
 });
 
 app.get("/cards", async(req, res) => {
-  res.send("")
+  try {
+    const cards = await Card.findAll();
+    res.send(cards);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Something bad happened")
+  }
 })
 
 /*
