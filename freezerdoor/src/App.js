@@ -17,7 +17,7 @@ function App() {
         x: 200,
         y: 400,
         rotation: -2.5,
-        text: "Nextbt",
+        title: "Nextbt",
       },
       {
         id: 23333,
@@ -27,7 +27,7 @@ function App() {
         x: 500,
         y: 400,
         rotation: 1,
-        text: "Nextbit Robin",
+        title: "Nextbit Robin",
       },
     ],
   };
@@ -82,7 +82,7 @@ function App() {
         x: 100,
         y: 100,
         rotation: parseFloat(randomTilt().toFixed(4)),
-        text: data.title,
+        title: data.title,
       };
 
       dispatch({
@@ -194,7 +194,7 @@ function App() {
                       fontStyle={"bold"}
                       fontSize={16}
                       fill={"#222"}
-                      text={card.text}
+                      text={card.title}
                       padding={4}
                     />
                   </Label>
