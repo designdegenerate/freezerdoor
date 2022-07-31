@@ -8,9 +8,7 @@ Images are stored as URLs to save on server costs.
 
 ## TODO
 - Better styling
-- Permanently store cards
 - Socket integration to allow for bidirectional ~~bickering with your mates~~ control.
-- Server and db to store data
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
