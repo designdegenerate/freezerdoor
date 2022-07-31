@@ -1,8 +1,5 @@
 import { Image } from "react-konva";
 import useImage from "use-image";
-import { useReducer } from "react";
-import { reducer } from "./reducer";
-// const [state, dispatch] = useReducer(reducer, initialState);
 
 const calculateIdealSize = async (url) => {
   let img;
@@ -58,21 +55,5 @@ const ImgCard = ({ url, width, height }) => {
 
   return <Image width={width} height={height} image={image} />;
 };
-
-const createCard = (data) => async(dispatch, state) => {
-
-}
-
-const moveCard = (data) => {
-
-}
-
-const deleteCard = (data) => {
-
-}
-
-
-// create a create, move and del action, attached to both reducer
-// and axios thing
 
 export { calculateIdealSize, ImgCard };

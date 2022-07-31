@@ -39,14 +39,15 @@ function App() {
         };
 
         (async () => {
-
-          const newCardWithId = await axios.post("http://localhost:4000/cards", newCard);
+          const newCardWithId = await axios.post(
+            "http://localhost:4000/cards",
+            newCard
+          );
 
           dispatch({
             type: "insert",
             payload: newCardWithId.data,
           });
-
         })();
 
         reset();
@@ -85,14 +86,20 @@ function App() {
                     listening={true}
                     rotation={card.rotation}
                     onDragEnd={(e) => {
-                      dispatch({
-                        type: "move",
-                        payload: {
-                          ...card,
+                      (async () => {
+                        const data = {
                           x: e.target.x(),
                           y: e.target.y(),
-                        },
-                      });
+                        }
+                        await axios.patch(
+                          `http://localhost:4000/cards/${card.id}`, data
+                          
+                        );
+                        dispatch({
+                          type: "move",
+                          payload: { ...card, ...data },
+                        });
+                      })();
                     }}
                     onMouseEnter={() => {
                       const label = labelRef.current;
