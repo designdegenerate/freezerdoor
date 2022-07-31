@@ -1,4 +1,5 @@
-import { createRef, useReducer } from "react";
+import axios from "axios";
+import { createRef, useEffect, useReducer } from "react";
 import { useForm } from "react-hook-form";
 import { Layer, Stage, Text, Label, Group, Tag, Rect } from "react-konva";
 import "./App.css";
@@ -8,28 +9,7 @@ function App() {
   const { register, handleSubmit, reset } = useForm();
 
   const initialState = {
-    content: [
-      {
-        id: 1,
-        url: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Febo_kalfsvleeskroket.jpg/800px-Febo_kalfsvleeskroket.jpg",
-        width: 200,
-        height: 100,
-        x: 200,
-        y: 400,
-        rotation: -2.5,
-        title: "Nextbt",
-      },
-      {
-        id: 23333,
-        url: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Febo_kalfsvleeskroket.jpg/800px-Febo_kalfsvleeskroket.jpg",
-        width: 200,
-        height: 100,
-        x: 500,
-        y: 400,
-        rotation: 1,
-        title: "Nextbit Robin",
-      },
-    ],
+    content: [],
   };
 
   const reducer = (state, action) => {
@@ -53,6 +33,8 @@ function App() {
     };
 
     switch (action.type) {
+      case "insertAll":
+        return { content: action.payload };
       case "insert":
         return { content: [...state.content, action.payload] };
       case "move":
@@ -66,33 +48,42 @@ function App() {
 
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  useEffect(() => {
+    (async () => {
+      const content = await axios.get("http://localhost:4000/cards");
+
+      dispatch({
+        type: "insertAll",
+        payload: content.data,
+      });
+    })();
+  }, []);
+
   const onSubmit = (data) => {
     let idealSize;
     const randomTilt = () => Math.random() * (2.5 - -2.5) + -2.5;
 
-    calculateIdealSize(data.url).then(
-      (results) => (idealSize = results)
-    ).then( () => {
+    calculateIdealSize(data.url)
+      .then((results) => (idealSize = results))
+      .then(() => {
+        const newCard = {
+          id: state.content.length + 1,
+          url: data.url,
+          width: idealSize.width,
+          height: idealSize.height,
+          x: 100,
+          y: 100,
+          rotation: parseFloat(randomTilt().toFixed(4)),
+          title: data.title,
+        };
 
-      const newCard = {
-        id: state.content.length + 1,
-        url: data.url,
-        width: idealSize.width,
-        height: idealSize.height,
-        x: 100,
-        y: 100,
-        rotation: parseFloat(randomTilt().toFixed(4)),
-        title: data.title,
-      };
+        dispatch({
+          type: "insert",
+          payload: newCard,
+        });
 
-      dispatch({
-        type: "insert",
-        payload: newCard,
+        reset();
       });
-
-      reset();
-    })
-
   };
 
   return (
@@ -113,94 +104,98 @@ function App() {
       <div id="canvas-wrapper">
         <Stage width={3000} height={1000}>
           <Layer>
-            {state.content.map((card) => {
-              const labelRef = createRef(null);
-              const overlayRef = createRef(null);
+            {state.content.length > 0 ? (
+              state.content.map((card) => {
+                const labelRef = createRef(null);
+                const overlayRef = createRef(null);
 
-              return (
-                <Group
-                  key={card.id}
-                  x={card.x}
-                  y={card.y}
-                  draggable={true}
-                  listening={true}
-                  rotation={card.rotation}
-                  onDragEnd={(e) => {
-                    dispatch({
-                      type: "move",
-                      payload: {
-                        ...card,
-                        x: e.target.x(),
-                        y: e.target.y(),
-                      },
-                    });
-                  }}
-                  onMouseEnter={() => {
-                    const label = labelRef.current;
-                    const overlay = overlayRef.current;
-                    label.setAttrs({ visible: true });
-                    overlay.setAttrs({ visible: true });
-                  }}
-                  onMouseLeave={() => {
-                    const label = labelRef.current;
-                    const overlay = overlayRef.current;
-                    label.setAttrs({ visible: false });
-                    overlay.setAttrs({ visible: false });
-                  }}
-                >
-                  <Rect
-                    width={card.width}
-                    height={card.height}
-                    fill={"white"}
-                    stroke={"white"}
-                    strokeWidth={8}
-                    />
-                  <ImgCard
-                    url={card.url}
-                    width={card.width}
-                    height={card.height}
-                  />
-                  <Group visible={false} ref={overlayRef}>
+                return (
+                  <Group
+                    key={card.id}
+                    x={card.x}
+                    y={card.y}
+                    draggable={true}
+                    listening={true}
+                    rotation={card.rotation}
+                    onDragEnd={(e) => {
+                      dispatch({
+                        type: "move",
+                        payload: {
+                          ...card,
+                          x: e.target.x(),
+                          y: e.target.y(),
+                        },
+                      });
+                    }}
+                    onMouseEnter={() => {
+                      const label = labelRef.current;
+                      const overlay = overlayRef.current;
+                      label.setAttrs({ visible: true });
+                      overlay.setAttrs({ visible: true });
+                    }}
+                    onMouseLeave={() => {
+                      const label = labelRef.current;
+                      const overlay = overlayRef.current;
+                      label.setAttrs({ visible: false });
+                      overlay.setAttrs({ visible: false });
+                    }}
+                  >
                     <Rect
                       width={card.width}
                       height={card.height}
-                      opacity={0.5}
-                      fill={"#000"}
-                    />
-                    <Text
-                      fontStyle={"bold"}
-                      fontSize={24}
                       fill={"white"}
-                      text={"×"}
-                      padding={2}
-                      offsetX={-4}
-                      offsetY={-2}
-                      onClick={() =>
-                        dispatch({
-                          type: "delete",
-                          payload: card.id,
-                        })
-                      }
+                      stroke={"white"}
+                      strokeWidth={8}
                     />
+                    <ImgCard
+                      url={card.url}
+                      width={card.width}
+                      height={card.height}
+                    />
+                    <Group visible={false} ref={overlayRef}>
+                      <Rect
+                        width={card.width}
+                        height={card.height}
+                        opacity={0.5}
+                        fill={"#000"}
+                      />
+                      <Text
+                        fontStyle={"bold"}
+                        fontSize={24}
+                        fill={"white"}
+                        text={"×"}
+                        padding={2}
+                        offsetX={-4}
+                        offsetY={-2}
+                        onClick={() =>
+                          dispatch({
+                            type: "delete",
+                            payload: card.id,
+                          })
+                        }
+                      />
+                    </Group>
+                    <Label
+                      ref={labelRef}
+                      offsetY={24}
+                      visible={false}
+                      padding={8}
+                    >
+                      <Tag fill={"white"} />
+                      <Text
+                        fontStyle={"bold"}
+                        fontSize={16}
+                        fill={"#222"}
+                        text={card.title}
+                        padding={4}
+                      />
+                    </Label>
                   </Group>
-                  <Label
-                    ref={labelRef}
-                    offsetY={24}
-                    visible={false}
-                    padding={8}
-                  >
-                    <Tag fill={"white"} />
-                    <Text
-                      fontStyle={"bold"}
-                      fontSize={16}
-                      fill={"#222"}
-                      text={card.title}
-                      padding={4}
-                    />
-                  </Label>
-                </Group>
-              );
-            })}
+                );
+              })
+            ) : (
+              <></>
+            )}
           </Layer>
         </Stage>
         <div id="grid">
