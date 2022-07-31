@@ -1,27 +1,51 @@
 import { Image } from "react-konva";
 import useImage from "use-image";
 
-const calculateIdealSize = (url) => {
-  let image = new window.Image();
-  image.src = url;
+const calculateIdealSize = async (url) => {
+  let img;
+  const results = {
+    width: 0,
+    height: 0,
+  };
 
-  let imgWidth = 0;
-  let imgHeight = 0;
+  const loadImage = new Promise((resolve, reject) => {
+    img = new window.Image();
+    img.onload = resolve;
+    img.onerror = reject;
+    img.src = url;
+  });
 
-  if (image.naturalWidth > 200) {
-    const scalingFactor = image.naturalWidth / 200;
-    imgWidth = 200;
-    imgHeight = image.naturalHeight / scalingFactor;
-  } else {
-    imgWidth = image.naturalWidth;
-    imgHeight = image.naturalHeight;
-  }
+  await loadImage
+    .then((img) => {
+      const width = img.target.naturalWidth;
+      const height = img.target.naturalHeight;
+      const rotation = width > height ? "land" : "port";
+      let longSide;
+      let shortSide;
 
-  image = null;
+      if (rotation === "land") {
+        longSide = { px: width, type: "width" };
+        shortSide = { px: height, type: "height" };
+      } else {
+        longSide = { px: height, type: "height" };
+        shortSide = { px: width, type: "width" };
+      }
+
+      if (longSide.px > 200) {
+        const scalingFactor = longSide.px / 200;
+        results[longSide.type] = 200;
+        results[shortSide.type] = shortSide.px / scalingFactor;
+      } else {
+        results.width = width;
+        results.height = height;
+      }
+
+  })
+  .catch((err) => console.log(err));
 
   return {
-    width: imgWidth,
-    height: imgHeight,
+    width: results.width,
+    height: results.height,
   };
 };
 
@@ -31,4 +55,4 @@ const ImgCard = ({ url, width, height }) => {
   return <Image width={width} height={height} image={image} />;
 };
 
-export {calculateIdealSize, ImgCard};
+export { calculateIdealSize, ImgCard };

@@ -16,6 +16,7 @@ function App() {
         height: 100,
         x: 200,
         y: 400,
+        rotation: -2.5,
         text: "Nextbt",
       },
       {
@@ -25,6 +26,7 @@ function App() {
         height: 100,
         x: 500,
         y: 400,
+        rotation: 1,
         text: "Nextbit Robin",
       },
     ],
@@ -65,24 +67,32 @@ function App() {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const onSubmit = (data) => {
-    const idealSize = calculateIdealSize(data.url);
+    let idealSize;
+    const randomTilt = () => Math.random() * (2.5 - -2.5) + -2.5;
 
-    const newCard = {
-      id: state.content.length + 1,
-      url: data.url,
-      width: idealSize.width,
-      height: idealSize.height,
-      x: 100,
-      y: 100,
-      text: data.title,
-    };
+    calculateIdealSize(data.url).then(
+      (results) => (idealSize = results)
+    ).then( () => {
 
-    dispatch({
-      type: "insert",
-      payload: newCard,
-    });
+      const newCard = {
+        id: state.content.length + 1,
+        url: data.url,
+        width: idealSize.width,
+        height: idealSize.height,
+        x: 100,
+        y: 100,
+        rotation: parseFloat(randomTilt().toFixed(4)),
+        text: data.title,
+      };
 
-    reset();
+      dispatch({
+        type: "insert",
+        payload: newCard,
+      });
+
+      reset();
+    })
+
   };
 
   return (
@@ -114,6 +124,7 @@ function App() {
                   y={card.y}
                   draggable={true}
                   listening={true}
+                  rotation={card.rotation}
                   onDragEnd={(e) => {
                     dispatch({
                       type: "move",
