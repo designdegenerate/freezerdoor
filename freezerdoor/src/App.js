@@ -5,6 +5,7 @@ import { Layer, Stage, Text, Label, Group, Tag, Rect } from "react-konva";
 import "./App.css";
 import { calculateIdealSize, ImgCard } from "./helpers";
 import { reducer } from "./reducer";
+import {apiURL, socketURL} from "./secrets";
 
 function App() {
   const { register, handleSubmit, reset } = useForm();
@@ -13,7 +14,7 @@ function App() {
 
   useEffect(() => {
     (async () => {
-      const content = await axios.get("http://localhost:4000/cards");
+      const content = await axios.get(`${apiURL}/cards`);
       dispatch({
         type: "insertAll",
         payload: content.data,
@@ -39,7 +40,7 @@ function App() {
         };
 
         const newCardWithId = await axios.post(
-          "http://localhost:4000/cards",
+          `${apiURL}/cards`,
           newCard
         );
 
@@ -89,7 +90,7 @@ function App() {
                         y: e.target.y(),
                       };
                       await axios.patch(
-                        `http://localhost:4000/cards/${card.id}`,
+                        `${apiURL}/cards/${card.id}`,
                         data
                       );
                       dispatch({
@@ -139,7 +140,7 @@ function App() {
                         offsetY={-2}
                         onClick={async () => {
                           await axios.delete(
-                            `http://localhost:4000/cards/${card.id}`
+                            `${apiURL}/cards/${card.id}`
                           );
                           dispatch({
                             type: "delete",
