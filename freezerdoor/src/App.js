@@ -46,6 +46,20 @@ function App() {
       });
     });
 
+    socket.on("lock", (data) => {
+      dispatch({
+        type: "lock",
+        payload: data
+      });
+    })
+
+    socket.on("move", (data) => {
+      dispatch({
+        type: "move",
+        payload: data,
+      });
+    })
+
     return () => {
       socket.off("connect");
       socket.off("disconnect");
@@ -66,6 +80,7 @@ function App() {
           x: 100,
           y: 100,
           rotation: parseFloat(randomTilt().toFixed(4)),
+          draggable: true,
           title: data.title,
         };
         await axios.post(`${apiURL}/cards`, newCard);
@@ -101,19 +116,18 @@ function App() {
                     key={card.id}
                     x={card.x}
                     y={card.y}
-                    draggable={true}
+                    draggable={card.draggable}
                     listening={true}
                     rotation={card.rotation}
+                    onDragStart={async (e) => {
+                      socket.emit("lock", card.id);
+                    }}
                     onDragEnd={async (e) => {
                       const data = {
                         x: e.target.x(),
                         y: e.target.y(),
                       };
                       await axios.patch(`${apiURL}/cards/${card.id}`, data);
-                      dispatch({
-                        type: "move",
-                        payload: { ...card, ...data },
-                      });
                     }}
                     onMouseEnter={() => {
                       const label = labelRef.current;
@@ -132,7 +146,7 @@ function App() {
                       width={card.width}
                       height={card.height}
                       fill={"white"}
-                      stroke={"white"}
+                      stroke={card.draggable ? "white" : "red"}
                       strokeWidth={8}
                     />
                     <ImgCard

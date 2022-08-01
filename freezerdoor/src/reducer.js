@@ -1,21 +1,23 @@
 const reducer = (state, action) => {
+  const newState = [...state.content];
+  const i = state.content.findIndex((card) => {
+    return card.id === action.payload.id;
+  });
+
   const moveCard = () => {
-    const i = state.content.findIndex((card) => {
-      return card.id === action.payload.id;
-    });
-    const newState = [...state.content];
     newState[i] = action.payload;
     return newState;
   };
 
   const deleteCard = () => {
-    let i = state.content.findIndex((card) => {
-      return card.id === action.payload.id;
-    });
-    const newState = [...state.content];
     newState.splice(i);
     return newState;
   };
+
+  const lockCard = () => {
+    newState[i].draggable = false;
+    return newState;
+  }
 
   switch (action.type) {
     case "insertAll":
@@ -24,6 +26,8 @@ const reducer = (state, action) => {
       return { content: [...state.content, action.payload] };
     case "move":
       return { content: moveCard() };
+    case "lock":
+      return { content: lockCard() };
     case "delete":
       return { content: deleteCard() };
     default:

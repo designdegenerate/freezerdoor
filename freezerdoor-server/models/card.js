@@ -20,7 +20,8 @@ module.exports = (sequelize, DataTypes) => {
     height: DataTypes.FLOAT,
     x: DataTypes.INTEGER,
     y: DataTypes.INTEGER,
-    rotation: DataTypes.FLOAT
+    rotation: DataTypes.FLOAT,
+    draggable: DataTypes.BOOLEAN,
   }, {
     sequelize,
     modelName: 'card',

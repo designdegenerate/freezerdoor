@@ -52,7 +52,23 @@ app.patch("/cards/:id", async (req, res) => {
         .send("No coordinates were included in the request");
     }
     const card = await Card.findByPk(req.params.id);
-    await card.update({ x: req.body.x, y: req.body.y });
+    await card.update({
+      x: req.body.x,
+      y: req.body.y,
+      draggable: true,
+    });
+    io.sockets.emit("move", card);
+    res.send("");
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Something bad happened");
+  }
+});
+
+app.get("/cards/:id/lock", async (req, res) => {
+  try {
+    const card = await Card.findByPk(req.params.id);
+    await card.update({ draggable: false });
     res.send("");
   } catch (error) {
     console.log(error);
@@ -64,7 +80,7 @@ app.delete("/cards/:id", async (req, res) => {
   try {
     const card = await Card.findByPk(req.params.id);
     await card.destroy();
-    io.sockets.emit("delete", {id: req.params.id});
+    io.sockets.emit("delete", { id: req.params.id });
     res.send("");
   } catch (error) {
     console.log(error);
@@ -75,13 +91,14 @@ app.delete("/cards/:id", async (req, res) => {
 io.on("connection", (socket) => {
   console.log("user connected");
 
-  // socket.on("post", (data) => {
-  //   console.log(data);
-  //   io.emit("post", data);
-  // });
-
   socket.on("disconnect", () => {
     console.log("user disconnected");
+  });
+
+  socket.on("lock", async (data) => {
+    const card = await Card.findByPk(data);
+    await card.update({ draggable: false });
+    socket.broadcast.emit("lock", { id: data });
   });
 });
 
