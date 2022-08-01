@@ -1,19 +1,27 @@
 require("dotenv").config();
+
+//Express
+const http = require("http");
 const express = require("express");
+const app = express();
 const corsMiddleWare = require("cors");
 const Card = require("./models").card;
-
-const app = express();
 const PORT = 4000;
+
+//Socket
+const { Server } = require("socket.io");
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: process.env.frontEndServer,
+    methods: ["GET", "POST"],
+  },
+});
 
 app.use(corsMiddleWare());
 
 const bodyParserMiddleWare = express.json();
 app.use(bodyParserMiddleWare);
-
-app.listen(process.env.PORT || PORT, () => {
-  console.log(`Listening on port: ${process.env.PORT || 4000}`);
-});
 
 app.get("/cards", async (req, res) => {
   try {
@@ -28,7 +36,8 @@ app.get("/cards", async (req, res) => {
 app.post("/cards", async (req, res) => {
   try {
     const newCard = await Card.create({ ...req.body });
-    res.send(newCard);
+    io.sockets.emit("post", newCard);
+    res.send("");
   } catch (error) {
     console.log(error);
     res.status(500).send("Something bad happened");
@@ -51,23 +60,31 @@ app.patch("/cards/:id", async (req, res) => {
   }
 });
 
-app.delete("/cards/:id", async(req, res) => {
+app.delete("/cards/:id", async (req, res) => {
   try {
     const card = await Card.findByPk(req.params.id);
     await card.destroy();
+    io.sockets.emit("delete", {id: req.params.id});
     res.send("");
   } catch (error) {
     console.log(error);
     res.status(500).send("Something bad happened");
   }
-})
+});
 
-/*
-  Endpoints to make
-  TODO:
-  - create del endpoint
-  - hook it up
+io.on("connection", (socket) => {
+  console.log("user connected");
 
-  - figure out sockets
+  // socket.on("post", (data) => {
+  //   console.log(data);
+  //   io.emit("post", data);
+  // });
 
-*/
+  socket.on("disconnect", () => {
+    console.log("user disconnected");
+  });
+});
+
+server.listen(PORT, () => {
+  console.log(`Server Listening on port: ${PORT}`);
+});

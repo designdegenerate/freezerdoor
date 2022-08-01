@@ -5,13 +5,12 @@ const reducer = (state, action) => {
     });
     const newState = [...state.content];
     newState[i] = action.payload;
-    console.log(action.payload);
     return newState;
   };
 
   const deleteCard = () => {
     let i = state.content.findIndex((card) => {
-      return card.id === action.payload;
+      return card.id === action.payload.id;
     });
     const newState = [...state.content];
     newState.splice(i);

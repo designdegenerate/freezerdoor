@@ -1,13 +1,16 @@
 import axios from "axios";
-import { createRef, useEffect, useReducer } from "react";
+import { createRef, useEffect, useReducer, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Layer, Stage, Text, Label, Group, Tag, Rect } from "react-konva";
 import "./App.css";
 import { calculateIdealSize, ImgCard } from "./helpers";
 import { reducer } from "./reducer";
-import {apiURL, socketURL} from "./secrets";
+import { apiURL, socketURL } from "./secrets";
+import io from "socket.io-client";
+const socket = io(socketURL);
 
 function App() {
+  const [isConnected, setIsConnected] = useState(socket.connected);
   const { register, handleSubmit, reset } = useForm();
   const initialState = { content: [] };
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -20,6 +23,33 @@ function App() {
         payload: content.data,
       });
     })();
+
+    socket.on("connect", () => {
+      setIsConnected(true);
+    });
+
+    socket.on("disconnect", () => {
+      setIsConnected(false);
+    });
+
+    socket.on("post", (data) => {
+      dispatch({
+        type: "insert",
+        payload: data,
+      });
+    });
+
+    socket.on("delete", (data) => {
+      dispatch({
+        type: "delete",
+        payload: data,
+      });
+    });
+
+    return () => {
+      socket.off("connect");
+      socket.off("disconnect");
+    };
   }, []);
 
   const onSubmit = (data) => {
@@ -38,17 +68,7 @@ function App() {
           rotation: parseFloat(randomTilt().toFixed(4)),
           title: data.title,
         };
-
-        const newCardWithId = await axios.post(
-          `${apiURL}/cards`,
-          newCard
-        );
-
-        dispatch({
-          type: "insert",
-          payload: newCardWithId.data,
-        });
-
+        await axios.post(`${apiURL}/cards`, newCard);
         reset();
       });
   };
@@ -89,10 +109,7 @@ function App() {
                         x: e.target.x(),
                         y: e.target.y(),
                       };
-                      await axios.patch(
-                        `${apiURL}/cards/${card.id}`,
-                        data
-                      );
+                      await axios.patch(`${apiURL}/cards/${card.id}`, data);
                       dispatch({
                         type: "move",
                         payload: { ...card, ...data },
@@ -139,13 +156,7 @@ function App() {
                         offsetX={-4}
                         offsetY={-2}
                         onClick={async () => {
-                          await axios.delete(
-                            `${apiURL}/cards/${card.id}`
-                          );
-                          dispatch({
-                            type: "delete",
-                            payload: card.id,
-                          });
+                          await axios.delete(`${apiURL}/cards/${card.id}`);
                         }}
                       />
                     </Group>
