@@ -27,7 +27,7 @@ function App() {
 
     calculateIdealSize(data.url)
       .then((results) => (idealSize = results))
-      .then(() => {
+      .then(async () => {
         const newCard = {
           url: data.url,
           width: idealSize.width,
@@ -38,17 +38,15 @@ function App() {
           title: data.title,
         };
 
-        (async () => {
-          const newCardWithId = await axios.post(
-            "http://localhost:4000/cards",
-            newCard
-          );
+        const newCardWithId = await axios.post(
+          "http://localhost:4000/cards",
+          newCard
+        );
 
-          dispatch({
-            type: "insert",
-            payload: newCardWithId.data,
-          });
-        })();
+        dispatch({
+          type: "insert",
+          payload: newCardWithId.data,
+        });
 
         reset();
       });
@@ -85,21 +83,19 @@ function App() {
                     draggable={true}
                     listening={true}
                     rotation={card.rotation}
-                    onDragEnd={(e) => {
-                      (async () => {
-                        const data = {
-                          x: e.target.x(),
-                          y: e.target.y(),
-                        };
-                        await axios.patch(
-                          `http://localhost:4000/cards/${card.id}`,
-                          data
-                        );
-                        dispatch({
-                          type: "move",
-                          payload: { ...card, ...data },
-                        });
-                      })();
+                    onDragEnd={async (e) => {
+                      const data = {
+                        x: e.target.x(),
+                        y: e.target.y(),
+                      };
+                      await axios.patch(
+                        `http://localhost:4000/cards/${card.id}`,
+                        data
+                      );
+                      dispatch({
+                        type: "move",
+                        payload: { ...card, ...data },
+                      });
                     }}
                     onMouseEnter={() => {
                       const label = labelRef.current;
@@ -141,14 +137,14 @@ function App() {
                         padding={2}
                         offsetX={-4}
                         offsetY={-2}
-                        onClick={() => {
-                          (async() => {
-                            await axios.delete(`http://localhost:4000/cards/${card.id}`);
-                            dispatch({
-                              type: "delete",
-                              payload: card.id,
-                            });
-                          })();
+                        onClick={async () => {
+                          await axios.delete(
+                            `http://localhost:4000/cards/${card.id}`
+                          );
+                          dispatch({
+                            type: "delete",
+                            payload: card.id,
+                          });
                         }}
                       />
                     </Group>
