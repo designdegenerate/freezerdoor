@@ -2,13 +2,25 @@
 
 Freezerdoor is a digital clone of the defunct [Top Gear™ Cool Wall](https://www.youtube.com/watch?v=niCQ8pf1W4M) where they ranked cars based on coolness and placed them in one of four categories: Seriously Uncool, Uncool, Cool, or Subzero.
 
-Built using React, react-konva, react-hook-forms (probably overkill,) PostgreSQL, and node.
+Built using React, react-konva, react-hook-forms (probably overkill,)Socket.io, PostgreSQL, and node.
+
+Freezerdoor supports ~~bickering with your mates~~ bidirectional control trough Socket.io. Combined with a voice chat, it can be used for remote cool wall sessions. There is no authentication, so anyone with the server url(s) can create chaos.
 
 Images are stored as URLs to save on server costs.
 
-## TODO
-- Better styling
-- Socket integration to allow for bidirectional ~~bickering with your mates~~ control.
+## TODO Someday
+- Much Better styling
+- Way better UX
+
+## Requirements
+- A PostgreSQL instance
+- Node
+
+## Installation and Setup
+1. Setup your own PostgreSQL server. Rename ``freezerdoor-server/config/config-template.json`` to ``freezerdoor-server/config/config.json`` and fill it in.
+2. Fill in and rename ``tenv-template`` and ``secrets-template.js`` to ``.env`` and ``secrets.js``.
+3. Run the server from the ``freezerdoor-server`` folder using ``node server.js``.
+4. Run the front-end from the ``freezerdoor`` folder using ``npm start``. Create a production build using ``npm run build``.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 

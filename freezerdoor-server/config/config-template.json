@@ -1,0 +1,6 @@
+{
+  "development": {
+    "url": "postgress url here",
+    "dialect": "postgres"
+  }
+}
