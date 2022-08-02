@@ -89,6 +89,7 @@ function App() {
           title: data.title,
         };
         await axios.post(`${apiURL}/cards`, newCard);
+        console.log(state.content);
         reset();
       });
   };
