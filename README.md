@@ -8,9 +8,21 @@ Freezerdoor supports ~~bickering with your mates~~ bidirectional control trough 
 
 Images are stored as URLs to save on server costs.
 
-## TODO Someday
-- Much Better styling
-- Way better UX
+## Screenshots
+<p align="center">
+  <img src="https://raw.githubusercontent.com/designdegenerate/freezerdoor/main/full-screenshot.png" alt="" width="50%" />
+</p>
+
+- Full zoomed-out view. I was too lazy too fill in the whole board.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/designdegenerate/freezerdoor/main/screenshot.png" alt="" width="50%" />
+</p>
+
+- The default view, the rest of the area is completely scrollable.
+
+## [View a Demo Here](https://teal-travesseiro-9be6e5.netlify.app/)
+Changes are lost when you leave or reload the page.
 
 ## Requirements
 - A PostgreSQL instance
