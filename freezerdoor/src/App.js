@@ -7,6 +7,11 @@ import { calculateIdealSize, ImgCard } from "./helpers";
 import { reducer } from "./reducer";
 import { apiURL, socketURL } from "./secrets";
 import io from "socket.io-client";
+import seriouslyUncool from "./images/seriously-uncool.svg";
+import uncool from "./images/uncool.svg";
+import cool from "./images/cool.png";
+import subzero from "./images/subzero.png";
+
 const socket = io(socketURL);
 
 function App() {
@@ -49,16 +54,16 @@ function App() {
     socket.on("lock", (data) => {
       dispatch({
         type: "lock",
-        payload: data
+        payload: data,
       });
-    })
+    });
 
     socket.on("move", (data) => {
       dispatch({
         type: "move",
         payload: data,
       });
-    })
+    });
 
     return () => {
       socket.off("connect");
@@ -90,16 +95,13 @@ function App() {
 
   return (
     <main>
-      <nav>
-        <h1>The Cool Wall</h1>
-      </nav>
       <details>
-        <summary>+ Create New Entry</summary>
+        <summary>+ New Entry</summary>
         <form onSubmit={handleSubmit(onSubmit)}>
           <label htmlFor="title">Title</label>
-          <input {...register("title")} id="title" type="text"></input>
+          <input {...register("title")} id="title" type="text" placeholder="Ford Mondeo"></input>
           <label htmlFor="url">Image URL</label>
-          <input {...register("url")} id="url" type="url"></input>
+          <input {...register("url")} id="url" type="url" placeholder="https://example.com/image.jpg"></input>
           <button type="submit">Create</button>
         </form>
       </details>
@@ -198,18 +200,16 @@ function App() {
           </Layer>
         </Stage>
         <div id="grid">
-          <div id="col-one">
-            <h2>Seriously Uncool</h2>
+          <div id="header">
+            <img src={seriouslyUncool} alt="Seriously Uncool" decoding="async"></img>
+            <img src={uncool} alt="Uncool" decoding="async"></img>
+            <img src={cool} alt="Cool" decoding="async"></img>
+            <img src={subzero} alt="Subzero" decoding="async"></img>
           </div>
-          <div id="col-two">
-            <h2>Uncool</h2>
-          </div>
-          <div id="col-three">
-            <h2>Cool</h2>
-          </div>
-          <div id="col-four">
-            <h2>Subzero</h2>
-          </div>
+          <div id="col-one"></div>
+          <div id="col-two"></div>
+          <div id="col-three"></div>
+          <div id="col-four"></div>
         </div>
       </div>
     </main>

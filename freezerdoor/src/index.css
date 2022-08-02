@@ -6,15 +6,8 @@
 }
 
 html {
-  --fg-color: #222;
-  --bg-color: #fff;
-}
-
-@media (prefers-color-scheme: dark) {
-  html {
-    --fg-color: #fff;
-    --bg-color: #222;
-  }
+  --fg-color: #fff;
+  --bg-color: #111;
 }
 
 body {
@@ -25,5 +18,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
   color: var(--fg-color);
-  background-color: var(--fg-color);
+
+  background-color: black;
 }
