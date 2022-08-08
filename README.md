@@ -105,3 +105,5 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 
 ## License
 MIT
+
+Top Gear is a trademark of the BBC.
